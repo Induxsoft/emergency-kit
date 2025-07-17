@@ -20,4 +20,6 @@
 
 - No se podrá hacer retiros en el punto de venta.
 
-- Antes de subir todas las ventas y regresar al modo normal debe realizar el corte de caja, `Este punto es muy importante`.
+- En modo emergencia no se deben realizar ventas a crédito.
+
+- Para trabajar en modo emergencias debe realizarse la apertura de cajas, realizar ventas y realizar el corte antes de cambiar a modo normal, `Este punto es muy importante`.
