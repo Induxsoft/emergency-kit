@@ -10,6 +10,7 @@ program ""
     #include "dbr.ftt.dkl"
     #include "r5.dkh" //Funciones de interoperabilidad con versiones R5 de Induxsoft
 
+    do errordet(@false)
     @PathLog="" //ruta donde se guardaran los log, si es vació no creará log
     @r5.program.gen.ventas="ftt.r5.ex.ventas.dkl" //herramienta que realiza las exportaciones de ventas
     @r5.path.outfile="transactions"//ruta donde se almacenaran los archivos con las ventas exportadas
@@ -18,6 +19,7 @@ program ""
     @r5.dnms_ord=@true
     @r5.delete.file.onsuccess=@false // si es true el archivo de transación es elimida despues de tener exito de importacion
     @r5.StatusAdministrativo="3" //estados en la cual se exportaran las ventas, 3- solo procesados
+    @r5.validate_corte_caja=@true //define si se debe validar el corte este en estado cerrado
 
     //1.- Obetener los args
     ref args=commandline("=")
@@ -54,6 +56,18 @@ program ""
         @"status":@r5.StatusAdministrativo
     }
 
+    if @r5.validate_corte_caja
+    {
+        if ValidateCorte(db,transacion)
+        {
+            do PrintLog("=============================================================================================")
+            do PrintLog("=====                       Se detectaron uno o más cortes de caja abiertos             =====")
+            do PrintLog("===== Para continuar con el proceso, debe cerrar el(los) corte(s) de caja pendiente(s). =====")
+            do PrintLog("=============================================================================================")
+            do rise_error(99,"")
+        }
+    }
+    
     do GenTransAndRegister(db,@qname,transacion)
 
     //3.- enviar transaciones nuevas
@@ -64,7 +78,9 @@ program ""
 
     exception
     {
-        do print("**** Error: "+ last_error())
+        error=last_error()
+        if trim(error)!=""{do print("**** Error: "+ error)}
+
         if isset("db")
         {
             //si la bd esta abierta, realizar los siguiente.

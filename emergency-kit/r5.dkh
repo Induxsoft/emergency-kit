@@ -468,7 +468,7 @@ SaveLog::pathlog
         pathfile=path.concat(pathlog,date_str(now(),"yyyy-MM-dd HH-mm")+".log")
         do file.wtext(pathfile,text.get(@logR5))
     }
-    else 
+    else if trim(pathlog)!=""
     {
         do Print("No existe el directorio: "+pathlog)
     }

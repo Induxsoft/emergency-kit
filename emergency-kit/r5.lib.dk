@@ -722,6 +722,20 @@ module ""
             do dbr.update(db,"pos_datapack",data,"id=@id",p)
         }
 
+        ValidateCorte::&db,&data
+        {
+            documentos="true"
+            status="true"
+            if trim(@@(data,"$documentos"))!=""{documentos=dbr.logicexp_from_list(trim(@@(data,"$documentos")),"v.documento=","OR","(",")")}
+            if trim(@@(data,"$status"))!=""{status=dbr.logicexp_from_list(trim(@@(data,"$status")),"v.StatusAdministrativo=","OR","(",")")}
+
+            return dbr.num(db,ftext("SELECT COUNT(*) FROM corte c
+                    INNER JOIN venta v ON c.Sys_PK=v.ICorte
+                    WHERE IFNULL(c.Cerrado,0)=0
+                    AND #<documentos>
+                    AND #<status>
+                    AND if(IFNULL(@fecha,'')='',TRUE,DATE(v.fecha)>=DATE(@fecha));"),data)
+        }
         SendDataServicePending::&db,&data
         {
             _isnew=parse.bool(@@(data,'_new'))
